@@ -96,6 +96,36 @@ metadata:
  `,
 		},
 		{
+			name:        "set-value-of-different-type",
+			description: "if a type is not specified for a setter, let yaml encoder decide the type",
+			setter:      "foo",
+			openapi: `
+openAPI:
+  definitions:
+    io.k8s.cli.setters.foo:
+      x-k8s-cli:
+        setter:
+          name: foo
+          value: abc
+ `,
+			input: `
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  annotations:
+    foo: 3 # {"$ref": "#/definitions/io.k8s.cli.setters.foo"}
+ `,
+			expected: `
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  annotations:
+    foo: abc # {"$ref": "#/definitions/io.k8s.cli.setters.foo"}
+ `,
+		},
+		{
 			name:        "set-foo-type-float",
 			description: "if a type is specified for a setter, ensure the field is of provided type",
 			setter:      "foo",
@@ -759,7 +789,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
   annotations:
-    app: "value:" # {"$ref": "#/definitions/io.k8s.cli.setters.app"}
+    app: 'value:' # {"$ref": "#/definitions/io.k8s.cli.setters.app"}
  `,
 		},
 		{

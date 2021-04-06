@@ -240,15 +240,9 @@ func (s *Set) set(field *yaml.RNode, ext *CliExtension, k8sSch, sch *spec.Schema
 
 	// this has a full setter, set its value
 	field.YNode().Value = ext.Setter.Value
+	// set the tag to empty so that yaml encoder can decide the tag
+	field.YNode().Tag = yaml.NodeTagEmpty
 
-	// format the node so it is quoted if it is a string. If there is
-	// type information on the setter schema, we use it. Otherwise we
-	// fall back to the field schema if it exists.
-	if len(sch.Type) > 0 {
-		yaml.FormatNonStringStyle(field.YNode(), *sch)
-	} else if k8sSch != nil {
-		yaml.FormatNonStringStyle(field.YNode(), *k8sSch)
-	}
 	return true, nil
 }
 
